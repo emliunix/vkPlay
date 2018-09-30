@@ -1,0 +1,4 @@
+[submodule "V-EZ"]
+	path = V-EZ
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/V-EZ.git
+	branch = master
