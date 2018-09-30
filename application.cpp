@@ -21,15 +21,14 @@ bool Application::initVulkanEZ()
 {
     VkResult result = VK_SUCCESS;
     // Create the V-EZ instance.
-    VezApplicationInfo appInfo = {
-        .pApplicationName = "MyApplication",
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "MyEngine",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-    };
+    VezApplicationInfo appInfo = {};
+	appInfo.pApplicationName = "MyApplication";
+	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.pEngineName = "MyEngine";
+	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 
-    VezInstanceCreateInfo instanceCreateInfo = {};
-    instanceCreateInfo.pApplicationInfo = &appInfo;
+	VezInstanceCreateInfo instanceCreateInfo = {};
+	instanceCreateInfo.pApplicationInfo = &appInfo,
 
     result = vezCreateInstance(&instanceCreateInfo, &mInstance);
     if (result != VK_SUCCESS)
@@ -70,10 +69,10 @@ bool Application::initVulkanEZ()
     //     return false;
 
     // Create a logical device connection to the physical device.
-    VezDeviceCreateInfo deviceCreateInfo = {
-        .enabledExtensionCount = 0,
-        .ppEnabledExtensionNames = nullptr,
-    };
+    VezDeviceCreateInfo deviceCreateInfo = {};
+	deviceCreateInfo.enabledExtensionCount = 0;
+	deviceCreateInfo.ppEnabledExtensionNames = nullptr;
+    
     result = vezCreateDevice(mPhyDevice, &deviceCreateInfo, &mDevice);
     if (result != VK_SUCCESS)
         return false;
@@ -117,14 +116,12 @@ vezDestroyFence(device, fence);
 
 bool Application::prepareShader()
 {
-    std::string glslSource = "";  // ReadFile("shader.vert");
-
-    VezShaderModuleCreateInfo createInfo = {
-        .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .codeSize = static_cast<uint32_t>(glslSource.size()),
-        .pGLSLSource = glslSource.c_str(),
-        .pEntryPoint = "main",
-    };
+    std::string glslSource = readFile("shader/simhash.comp");
+    VezShaderModuleCreateInfo createInfo = {};
+	createInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+	createInfo.codeSize = static_cast<uint32_t>(glslSource.size());
+	createInfo.pGLSLSource = glslSource.c_str();
+	createInfo.pEntryPoint = "main";
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
     VkResult result = vezCreateShaderModule(mDevice, &createInfo, &shaderModule);
@@ -146,7 +143,6 @@ void uploadData()
     // STAGING Buffer
     // Copy To GPU Mem
 }
-
 
 int Application::main(int argc, char** argv)
 {

@@ -2,7 +2,11 @@
 #define _APPLICATION_H
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
 #include <VEZ.h>
+
+#include "utils.hpp"
 
 class Application
 {
