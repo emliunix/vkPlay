@@ -8,20 +8,29 @@
 
 #include "utils.hpp"
 
+#define COMPUTE_LOCAL_X 100
+#define COMPUTE_LOCAL_Y 1
+#define COMPUTE_LOCAL_Z 1
+
+#define COMPUTE_BUFFER_SIZE 1048576 // 1MB
+#define LOCAL_GROUP_SIZE 100
+
 class SimhashVK
 {
 public:
     SimhashVK(VkDevice device);
     ~SimhashVK();
     void init();
-    bool execute(uint32_t sz, uint64_t *data);
+    void destroy();
+    bool execute(uint32_t sz, uint64_t *data, uint64_t simhash);
 private:
-    VkFence upload(uint32_t sz, uint64_t *data);
-    VkFence compute();
-    VkFence download(uint32_t sz, uint64_t *data);
-    VkCommandBuffer createCommandBuffer();
+    void upload(uint32_t sz, uint64_t *data);
+    void compute(uint32_t size, uint64_t simhash);
+    void download(uint32_t sz, uint64_t *data);
     VezPipeline createPipeline();
     VkShaderModule createShader();
+    VkBuffer createStagingBuffer();
+    VkBuffer createGPUBuffer();
     VkQueue mTransferQueue;
     VkQueue mComputeQueue;
     VkShaderModule mSimhashShader;

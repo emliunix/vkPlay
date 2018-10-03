@@ -1,17 +1,31 @@
 #version 460
-#extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_compute_shader : enable
+// #extension GL_ARB_separate_shader_objects : enable
+// #extension GL_ARB_gpu_shader_int64 : enable
 
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (push_constant) uniform Args
+{
+  uint size;
+  uint simhashl;
+  uint simhashh;
+};
 
-layout (std140, binding = 0) buffer buf {
+layout (local_size_x = 100, local_size_y = 1, local_size_z = 1) in;
+
+layout (std140, binding = 0) buffer Data {
   uint data[];
 };
 
 void main() {
-  uint simhash = 1234;
-  uint index = (gl_GlobalInvocationID.z * gl_NumWorkGroups.y  +
-               gl_GlobalInvocationID.y ) * gl_NumWorkGroups.x +
-              gl_GlobalInvocationID.x;
-  data[index] = bitCount(data[index] ^ simhash);
+  // uint index = (gl_GlobalInvocationID.z * gl_NumWorkGroups.y  +
+  //              gl_GlobalInvocationID.y ) * gl_NumWorkGroups.x +
+  //             gl_GlobalInvocationID.x;
+  // if (index >= size) {
+  //   return;
+  // }
+  // assume little-endian
+  // store the count at the lower word
+  // uint bc = bitCount(~(data[index * 2] ^ simhashl)) +
+  //           bitCount(~(data[index * 2 + 1] ^ simhashh));
+  // data[index * 2] = bc;
+  data[gl_GlobalInvocationID.x * 2] = gl_GlobalInvocationID.x | (gl_GlobalInvocationID.y << 16) | (gl_GlobalInvocationID.z << 32);
 }

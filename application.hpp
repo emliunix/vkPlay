@@ -1,5 +1,7 @@
 #ifndef _APPLICATION_H
 #define _APPLICATION_H
+
+#include <intrin.h>
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -7,6 +9,7 @@
 #include <VEZ.h>
 
 #include "utils.hpp"
+#include "simhashvk.hpp"
 
 class Application
 {

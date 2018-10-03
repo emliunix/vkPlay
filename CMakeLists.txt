@@ -29,6 +29,7 @@ endif (WIN32)
 
 if (WIN32)
     file (COPY V-EZ/Bin/x86_64/VEZd.dll DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/)
+    file (COPY V-EZ/Bin/x86_64/VEZd.pdb DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/)
 endif (WIN32)
 
 set (SHADERS

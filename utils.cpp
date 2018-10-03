@@ -8,3 +8,12 @@ std::string readFile(const char *filename)
     is.close();
     return ss.str();
 }
+
+void checkResult(VkResult result)
+{
+    if (VK_SUCCESS != result)
+    {
+        std::runtime_error("VkResult Error");
+		std::exit(-1);
+    }
+}

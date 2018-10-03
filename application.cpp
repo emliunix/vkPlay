@@ -21,14 +21,21 @@ bool Application::initVulkanEZ()
 {
     VkResult result = VK_SUCCESS;
     // Create the V-EZ instance.
+
     VezApplicationInfo appInfo = {};
 	appInfo.pApplicationName = "MyApplication";
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.pEngineName = "MyEngine";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 
+	std::vector<const char*> enabledLayers{
+		"VK_LAYER_LUNARG_standard_validation",
+		"VK_LAYER_LUNARG_object_tracker",
+	};
 	VezInstanceCreateInfo instanceCreateInfo = {};
-	instanceCreateInfo.pApplicationInfo = &appInfo,
+	instanceCreateInfo.pApplicationInfo = &appInfo;
+	instanceCreateInfo.enabledLayerCount = 1;
+	instanceCreateInfo.ppEnabledLayerNames = enabledLayers.data();
 
     result = vezCreateInstance(&instanceCreateInfo, &mInstance);
     if (result != VK_SUCCESS)
@@ -144,6 +151,43 @@ void uploadData()
     // Copy To GPU Mem
 }
 
+static inline void print_data(uint32_t sz, uint64_t *data) {
+    for (uint32_t i = 0; i < sz; ++i)
+    {
+		std::cout.width(5);
+		std::cout << i;
+		std::cout << " 0x";
+		std::cout.width(16);
+		char prevFill = std::cout.fill('0');
+		std::cout << std::hex << data[i];
+		std::cout.fill(prevFill);
+		std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+static inline void print_data_count(uint32_t sz, uint64_t *data) {
+	for (uint32_t i = 0; i < sz; ++i)
+	{
+		std::cout.width(5);
+		std::cout << i << " ";
+		std::cout.width(5);
+		std::cout << std::dec << data[i];
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+}
+
+void initDataWithIndex(uint32_t dataSize, uint64_t *data)
+{
+	for (uint32_t i = 0; i < dataSize; ++i)
+	{
+		data[i] = i;
+	}
+}
+
+
+
 int Application::main(int argc, char** argv)
 {
     // if (!InitGLFW())
@@ -158,6 +202,28 @@ int Application::main(int argc, char** argv)
         return -1;
     }
 
+    SimhashVK simhash(mDevice);
+	int dataSize = 20;
+	uint64_t theHash = 0x0000111100001111;
+	uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t) * dataSize);;
+	initDataWithIndex(dataSize, data);
+	std::cout << "Simhash:" << std::endl << "      0x0000111100001111" << std::endl;
+	std::cout << "Data:" << std::endl;
+    print_data(dataSize, data);
+	simhash.init();
+	simhash.execute(dataSize, data, theHash);
+	simhash.destroy();
+	std::cout << "Processed Data:" << std::endl;
+	print_data_count(dataSize, data);
+	initDataWithIndex(dataSize, data);
+	for (uint32_t i = 0; i < dataSize; ++i)
+	{
+		data[i] = __popcnt64(~(data[i] ^ theHash));
+	}
+	std::cout << "Expected Data:" << std::endl;
+	print_data_count(dataSize, data);
+
+	free((void *)data);
     vezDestroyDevice(mDevice);
     vezDestroyInstance(mInstance);
     return 0;
@@ -167,4 +233,5 @@ int main(int argc, char** argv)
 {
     Application app;
     return app.main(argc, argv);
+    return 0;
 }
