@@ -1,5 +1,5 @@
-#version 460
-// #extension GL_ARB_separate_shader_objects : enable
+#version 450
+#extension GL_ARB_separate_shader_objects : enable
 // #extension GL_ARB_gpu_shader_int64 : enable
 
 layout (push_constant) uniform Args
@@ -9,23 +9,22 @@ layout (push_constant) uniform Args
   uint simhashh;
 };
 
-layout (local_size_x = 100, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-layout (std140, binding = 0) buffer Data {
+layout (std430, binding = 0) buffer A_Data {
   uint data[];
-};
+} Data;
 
 void main() {
-  // uint index = (gl_GlobalInvocationID.z * gl_NumWorkGroups.y  +
-  //              gl_GlobalInvocationID.y ) * gl_NumWorkGroups.x +
-  //             gl_GlobalInvocationID.x;
-  // if (index >= size) {
-  //   return;
-  // }
+  uint index = gl_WorkGroupID.x;
+  if (index >= size) {
+    return;
+  }
   // assume little-endian
   // store the count at the lower word
-  // uint bc = bitCount(~(data[index * 2] ^ simhashl)) +
-  //           bitCount(~(data[index * 2 + 1] ^ simhashh));
-  // data[index * 2] = bc;
-  data[gl_GlobalInvocationID.x * 2] = gl_GlobalInvocationID.x | (gl_GlobalInvocationID.y << 16) | (gl_GlobalInvocationID.z << 32);
+  uint bc = bitCount(~(Data.data[index * 2] ^ simhashl)) +
+            bitCount(~(Data.data[index * 2 + 1] ^ simhashh));
+  Data.data[index * 2] = bc;
+  // Data.data[gl_WorkGroupID.x * 2] = gl_WorkGroupID.x + 1;
+  // Data.data[0] = 100;
 }

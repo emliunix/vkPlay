@@ -52,17 +52,32 @@ bool Application::initVulkanEZ()
 
     std::vector<VkPhysicalDevice> physicalDevices(physicalDeviceCount);
     vezEnumeratePhysicalDevices(mInstance, &physicalDeviceCount, physicalDevices.data());
-
+    
+	VkPhysicalDeviceProperties properties;
+	char useDevice[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
     for (auto pd : physicalDevices)
     {
-        VkPhysicalDeviceProperties properties;
         vezGetPhysicalDeviceProperties(pd, &properties);
-        if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+    //     if (properties.deviceType & (
+		 	//VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU |
+		 	//VK_PHYSICAL_DEVICE_TYPE_CPU))
+		if (properties.deviceType & VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
         {
             mPhyDevice = pd;
-            break;
+			strncpy_s(useDevice, properties.deviceName, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
         }
-    }
+		// physical device limit
+		uint32_t *wgCount = properties.limits.maxComputeWorkGroupCount;
+		uint32_t *wgSize = properties.limits.maxComputeWorkGroupSize;
+		uint32_t wgInvoc = properties.limits.maxComputeWorkGroupInvocations;
+		std::cout << "Device: " << properties.deviceName << std::endl;
+		std::cout << "maxComputeSharedMemorySize: " << properties.limits.maxComputeSharedMemorySize << "b" << std::endl;
+		std::cout << "maxComputeWorkGroupCount: " << wgCount[0] << ", " << wgCount[1] << ", " << wgCount[2] << std::endl;
+		std::cout << "maxComputeWorkGroupSize: " << wgSize[0] << ", " << wgSize[1] << ", " << wgSize[2] << std::endl;
+		std::cout << "maxComputeWorkGroupInvocations: " << properties.limits.maxComputeWorkGroupInvocations << std::endl;
+		infoMemory(pd);
+	}
+    std::cout << "Use Device: " << useDevice << std::endl;
 
     if (mPhyDevice == VK_NULL_HANDLE)
         return false;
@@ -202,19 +217,21 @@ int Application::main(int argc, char** argv)
         return -1;
     }
 
-    SimhashVK simhash(mDevice);
-	int dataSize = 20;
+	uint32_t dataSize = 20;
 	uint64_t theHash = 0x0000111100001111;
 	uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t) * dataSize);;
 	initDataWithIndex(dataSize, data);
 	std::cout << "Simhash:" << std::endl << "      0x0000111100001111" << std::endl;
 	std::cout << "Data:" << std::endl;
     print_data(dataSize, data);
+	// compute with GPU
+	SimhashVK simhash(mDevice, mPhyDevice);
 	simhash.init();
 	simhash.execute(dataSize, data, theHash);
 	simhash.destroy();
 	std::cout << "Processed Data:" << std::endl;
 	print_data_count(dataSize, data);
+	// compute with CPU
 	initDataWithIndex(dataSize, data);
 	for (uint32_t i = 0; i < dataSize; ++i)
 	{
@@ -226,6 +243,9 @@ int Application::main(int argc, char** argv)
 	free((void *)data);
     vezDestroyDevice(mDevice);
     vezDestroyInstance(mInstance);
+
+	//int pause;
+	//std::cin >> pause;
     return 0;
 }
 
@@ -233,5 +253,4 @@ int main(int argc, char** argv)
 {
     Application app;
     return app.main(argc, argv);
-    return 0;
 }

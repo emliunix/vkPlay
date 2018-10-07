@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7)
+﻿cmake_minimum_required (VERSION 3.7)
 project (VkPlay)
 
 set (CMAKE_CXX_STANDARD 17)
@@ -20,16 +20,9 @@ add_executable (play ${APP_SOURCES})
 target_link_libraries (play Vulkan::Vulkan VEZ)
 
 # add_custom_command(TARGET play POST_BUILD COMMAND cscope -b -q -U -R)
-
 if (WIN32)
-    set (BUILD_TYPE Debug)
-else ()
-    set (BUILD_TYPE "")
-endif (WIN32)
-
-if (WIN32)
-    file (COPY V-EZ/Bin/x86_64/VEZd.dll DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/)
-    file (COPY V-EZ/Bin/x86_64/VEZd.pdb DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/)
+    file (COPY V-EZ/Bin/x86_64/VEZd.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+    file (COPY V-EZ/Bin/x86_64/VEZd.pdb DESTINATION ${CMAKE_BINARY_DIR}/)
 endif (WIN32)
 
 set (SHADERS
@@ -37,5 +30,5 @@ set (SHADERS
 )
 
 foreach (SHADER ${SHADERS})
-    file (COPY shader/${SHADER} DESTINATION ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/shader)
+    file (COPY shader/${SHADER} DESTINATION ${CMAKE_BINARY_DIR}/shader)
 endforeach (SHADER)
