@@ -20,7 +20,7 @@
 class SimhashVK
 {
 public:
-	SimhashVK(VkDevice device, VkPhysicalDevice phyDevice);
+    SimhashVK(VkDevice device, VkPhysicalDevice phyDevice);
     ~SimhashVK();
     void init();
     void destroy();
@@ -32,17 +32,17 @@ private:
     VezPipeline createPipeline();
     VkShaderModule createShader();
     void createStagingBuffer();
-	void createGPUBuffer();
-	VkBuffer createGPUBuffer2();
+    void createGPUBuffer();
+    VkBuffer createGPUBuffer2();
     VkQueue mTransferQueue;
     VkQueue mComputeQueue;
     VkShaderModule mSimhashShader;
     VkCommandBuffer mCmdBuffer;
-	VkPhysicalDevice mPhyDevice;
+    VkPhysicalDevice mPhyDevice;
     VkDevice mDevice;
-	VkDeviceMemory mStagingMem;
+    VkDeviceMemory mStagingMem;
     VkBuffer mStagingBuffer;
-	VkDeviceMemory mGPUMem;
+    VkDeviceMemory mGPUMem;
     VkBuffer mGPUBuffer;
 };
 #endif /* _SIMHASH_VK_H */

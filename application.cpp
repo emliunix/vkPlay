@@ -23,19 +23,19 @@ bool Application::initVulkanEZ()
     // Create the V-EZ instance.
 
     VezApplicationInfo appInfo = {};
-	appInfo.pApplicationName = "MyApplication";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "MyEngine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pApplicationName = "MyApplication";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "MyEngine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 
-	std::vector<const char*> enabledLayers{
-		"VK_LAYER_LUNARG_standard_validation",
-		"VK_LAYER_LUNARG_object_tracker",
-	};
-	VezInstanceCreateInfo instanceCreateInfo = {};
-	instanceCreateInfo.pApplicationInfo = &appInfo;
-	instanceCreateInfo.enabledLayerCount = 1;
-	instanceCreateInfo.ppEnabledLayerNames = enabledLayers.data();
+    std::vector<const char*> enabledLayers{
+        "VK_LAYER_LUNARG_standard_validation",
+        "VK_LAYER_LUNARG_object_tracker",
+    };
+    VezInstanceCreateInfo instanceCreateInfo = {};
+    instanceCreateInfo.pApplicationInfo = &appInfo;
+    instanceCreateInfo.enabledLayerCount = 1;
+    instanceCreateInfo.ppEnabledLayerNames = enabledLayers.data();
 
     result = vezCreateInstance(&instanceCreateInfo, &mInstance);
     if (result != VK_SUCCESS)
@@ -53,30 +53,30 @@ bool Application::initVulkanEZ()
     std::vector<VkPhysicalDevice> physicalDevices(physicalDeviceCount);
     vezEnumeratePhysicalDevices(mInstance, &physicalDeviceCount, physicalDevices.data());
     
-	VkPhysicalDeviceProperties properties;
-	char useDevice[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
+    VkPhysicalDeviceProperties properties;
+    char useDevice[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
     for (auto pd : physicalDevices)
     {
         vezGetPhysicalDeviceProperties(pd, &properties);
     //     if (properties.deviceType & (
-		 	//VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU |
-		 	//VK_PHYSICAL_DEVICE_TYPE_CPU))
-		if (properties.deviceType & VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+             //VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU |
+             //VK_PHYSICAL_DEVICE_TYPE_CPU))
+        if (properties.deviceType & VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
         {
             mPhyDevice = pd;
-			std::memcpy(useDevice, properties.deviceName, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
+            std::memcpy(useDevice, properties.deviceName, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
         }
-		// physical device limit
-		uint32_t *wgCount = properties.limits.maxComputeWorkGroupCount;
-		uint32_t *wgSize = properties.limits.maxComputeWorkGroupSize;
-		uint32_t wgInvoc = properties.limits.maxComputeWorkGroupInvocations;
-		std::cout << "Device: " << properties.deviceName << std::endl;
-		std::cout << "maxComputeSharedMemorySize: " << properties.limits.maxComputeSharedMemorySize << "b" << std::endl;
-		std::cout << "maxComputeWorkGroupCount: " << wgCount[0] << ", " << wgCount[1] << ", " << wgCount[2] << std::endl;
-		std::cout << "maxComputeWorkGroupSize: " << wgSize[0] << ", " << wgSize[1] << ", " << wgSize[2] << std::endl;
-		std::cout << "maxComputeWorkGroupInvocations: " << properties.limits.maxComputeWorkGroupInvocations << std::endl;
-		infoMemory(pd);
-	}
+        // physical device limit
+        uint32_t *wgCount = properties.limits.maxComputeWorkGroupCount;
+        uint32_t *wgSize = properties.limits.maxComputeWorkGroupSize;
+        uint32_t wgInvoc = properties.limits.maxComputeWorkGroupInvocations;
+        std::cout << "Device: " << properties.deviceName << std::endl;
+        std::cout << "maxComputeSharedMemorySize: " << properties.limits.maxComputeSharedMemorySize << "b" << std::endl;
+        std::cout << "maxComputeWorkGroupCount: " << wgCount[0] << ", " << wgCount[1] << ", " << wgCount[2] << std::endl;
+        std::cout << "maxComputeWorkGroupSize: " << wgSize[0] << ", " << wgSize[1] << ", " << wgSize[2] << std::endl;
+        std::cout << "maxComputeWorkGroupInvocations: " << properties.limits.maxComputeWorkGroupInvocations << std::endl;
+        infoMemory(pd);
+    }
     std::cout << "Use Device: " << useDevice << std::endl;
 
     if (mPhyDevice == VK_NULL_HANDLE)
@@ -92,8 +92,8 @@ bool Application::initVulkanEZ()
 
     // Create a logical device connection to the physical device.
     VezDeviceCreateInfo deviceCreateInfo = {};
-	deviceCreateInfo.enabledExtensionCount = 0;
-	deviceCreateInfo.ppEnabledExtensionNames = nullptr;
+    deviceCreateInfo.enabledExtensionCount = 0;
+    deviceCreateInfo.ppEnabledExtensionNames = nullptr;
     
     result = vezCreateDevice(mPhyDevice, &deviceCreateInfo, &mDevice);
     if (result != VK_SUCCESS)
@@ -140,10 +140,10 @@ bool Application::prepareShader()
 {
     std::string glslSource = readFile("shader/simhash.comp");
     VezShaderModuleCreateInfo createInfo = {};
-	createInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-	createInfo.codeSize = static_cast<uint32_t>(glslSource.size());
-	createInfo.pGLSLSource = glslSource.c_str();
-	createInfo.pEntryPoint = "main";
+    createInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+    createInfo.codeSize = static_cast<uint32_t>(glslSource.size());
+    createInfo.pGLSLSource = glslSource.c_str();
+    createInfo.pEntryPoint = "main";
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
     VkResult result = vezCreateShaderModule(mDevice, &createInfo, &shaderModule);
@@ -169,36 +169,36 @@ void uploadData()
 static inline void print_data(uint32_t sz, uint64_t *data) {
     for (uint32_t i = 0; i < sz; ++i)
     {
-		std::cout.width(5);
-		std::cout << i;
-		std::cout << " 0x";
-		std::cout.width(16);
-		char prevFill = std::cout.fill('0');
-		std::cout << std::hex << data[i];
-		std::cout.fill(prevFill);
-		std::cout << std::endl;
+        std::cout.width(5);
+        std::cout << i;
+        std::cout << " 0x";
+        std::cout.width(16);
+        char prevFill = std::cout.fill('0');
+        std::cout << std::hex << data[i];
+        std::cout.fill(prevFill);
+        std::cout << std::endl;
     }
     std::cout << std::endl;
 }
 
 static inline void print_data_count(uint32_t sz, uint64_t *data) {
-	for (uint32_t i = 0; i < sz; ++i)
-	{
-		std::cout.width(5);
-		std::cout << i << " ";
-		std::cout.width(5);
-		std::cout << std::dec << data[i];
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+    for (uint32_t i = 0; i < sz; ++i)
+    {
+        std::cout.width(5);
+        std::cout << i << " ";
+        std::cout.width(5);
+        std::cout << std::dec << data[i];
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void initDataWithIndex(uint32_t dataSize, uint64_t *data)
 {
-	for (uint32_t i = 0; i < dataSize; ++i)
-	{
-		data[i] = i;
-	}
+    for (uint32_t i = 0; i < dataSize; ++i)
+    {
+        data[i] = i;
+    }
 }
 
 
@@ -217,43 +217,43 @@ int Application::main(int argc, char** argv)
         return -1;
     }
 
-	uint32_t dataSize = 20;
-	uint64_t theHash = 0x29c3211d11255404; //0x0000111100001111;
-	uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t) * dataSize);;
-	initDataWithIndex(dataSize, data);
+    uint32_t dataSize = 20;
+    uint64_t theHash = 0x29c3211d11255404; //0x0000111100001111;
+    uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t) * dataSize);;
+    initDataWithIndex(dataSize, data);
     data[0] = 0xbde22cbd813534ef;
     std::cout << "Low part: " << std::hex << ((uint32_t *)data)[0] << " High part: " << std::hex << ((uint32_t *)data)[1] << std::endl;
     // print simHash
-	std::cout << "Simhash:" << std::endl << "      0x";
+    std::cout << "Simhash:" << std::endl << "      0x";
     std::cout.width(16);
     char prevFill = std::cout.fill('0');
     std::cout << std::hex << theHash << std::endl;
     std::cout.fill(prevFill);
     // print data
-	std::cout << "Data:" << std::endl;
+    std::cout << "Data:" << std::endl;
     print_data(dataSize, data);
-	// compute with GPU
-	SimhashVK simhash(mDevice, mPhyDevice);
-	simhash.init();
-	simhash.execute(dataSize, data, theHash);
-	simhash.destroy();
-	std::cout << "Processed Data:" << std::endl;
-	print_data_count(dataSize, data);
-	// compute with CPU
+    // compute with GPU
+    SimhashVK simhash(mDevice, mPhyDevice);
+    simhash.init();
+    simhash.execute(dataSize, data, theHash);
+    simhash.destroy();
+    std::cout << "Processed Data:" << std::endl;
+    print_data_count(dataSize, data);
+    // compute with CPU
     //initDataWithIndex(dataSize, data);
-	//for (uint32_t i = 0; i < dataSize; ++i)
-	//{
-	//	data[i] = __popcnt64(~(data[i] ^ theHash));
-	//}
-	//std::cout << "Expected Data:" << std::endl;
-	//print_data_count(dataSize, data);
+    //for (uint32_t i = 0; i < dataSize; ++i)
+    //{
+    //    data[i] = __popcnt64(~(data[i] ^ theHash));
+    //}
+    //std::cout << "Expected Data:" << std::endl;
+    //print_data_count(dataSize, data);
 
-	free((void *)data);
+    free((void *)data);
     vezDestroyDevice(mDevice);
     vezDestroyInstance(mInstance);
 
-	//int pause;
-	//std::cin >> pause;
+    //int pause;
+    //std::cin >> pause;
     return 0;
 }
 
