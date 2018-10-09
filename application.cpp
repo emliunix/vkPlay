@@ -193,15 +193,23 @@ static inline void print_data_count(uint32_t sz, uint64_t *data) {
     std::cout << std::endl;
 }
 
-void initDataWithIndex(uint32_t dataSize, uint64_t *data)
+static inline void initDataWithIndex(uint32_t dataSize, uint64_t *data)
 {
     for (uint32_t i = 0; i < dataSize; ++i)
     {
         data[i] = i;
     }
+    // some real test data
+    data[0] = 0xbde22cbd813534ef;
 }
 
-
+static inline void calcSimHashCPU(uint64_t *data, uint32_t dataSize, uint64_t theHash)
+{
+    for (uint32_t i = 0; i < dataSize; ++i)
+    {
+       data[i] = popcnt64(data[i] ^ theHash);
+    }
+}
 
 int Application::main(int argc, char** argv)
 {
@@ -221,7 +229,6 @@ int Application::main(int argc, char** argv)
     uint64_t theHash = 0x29c3211d11255404; //0x0000111100001111;
     uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t) * dataSize);;
     initDataWithIndex(dataSize, data);
-    data[0] = 0xbde22cbd813534ef;
     std::cout << "Low part: " << std::hex << ((uint32_t *)data)[0] << " High part: " << std::hex << ((uint32_t *)data)[1] << std::endl;
     // print simHash
     std::cout << "Simhash:" << std::endl << "      0x";
@@ -240,13 +247,42 @@ int Application::main(int argc, char** argv)
     std::cout << "Processed Data:" << std::endl;
     print_data_count(dataSize, data);
     // compute with CPU
-    //initDataWithIndex(dataSize, data);
-    //for (uint32_t i = 0; i < dataSize; ++i)
-    //{
-    //    data[i] = __popcnt64(~(data[i] ^ theHash));
-    //}
-    //std::cout << "Expected Data:" << std::endl;
-    //print_data_count(dataSize, data);
+    initDataWithIndex(dataSize, data);
+    calcSimHashCPU(data, dataSize, theHash);
+
+    std::cout << "Expected Data:" << std::endl;
+    print_data_count(dataSize, data);
+
+    // performance test
+    // GPU Part
+    std::cout << "Performance test (batch = 20, loop = 3000):" << std::endl;
+    std::cout << "GPU:" << std::endl;
+    simhash = SimhashVK(mDevice, mPhyDevice);
+    simhash.init();
+    auto startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < 3000; ++i)
+    {
+        initDataWithIndex(dataSize, data);
+        simhash.execute(dataSize, data, theHash);
+    }
+    auto stopTime = std::chrono::high_resolution_clock::now();
+    double delta = std::chrono::duration_cast<std::chrono::duration<double>>(stopTime - startTime).count();
+    std::cout << "Took " << delta << "s" << std::endl;
+    std::cout << 3000 * 20 / delta << "qps" << std::endl;
+    simhash.destroy();
+    // CPU Part
+    std::cout << "CPU:" << std::endl;
+    startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < 3000; ++i)
+    {
+        std::cout << '.';
+        calcSimHashCPU(data, dataSize, theHash);
+    }
+    std::cout << std::endl;
+    stopTime = std::chrono::high_resolution_clock::now();
+    delta = std::chrono::duration_cast<std::chrono::duration<double>>(stopTime - startTime).count();
+    std::cout << "Took " << delta << "s" << std::endl;
+    std::cout << 3000 * 20 / delta << "qps" << std::endl;
 
     free((void *)data);
     vezDestroyDevice(mDevice);
