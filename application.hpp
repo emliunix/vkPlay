@@ -1,11 +1,12 @@
 #ifndef _APPLICATION_H
 #define _APPLICATION_H
 
-#include <intrin.h>
+//#include <intrin.h>
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include <VEZ.h>
 
 #include "utils.hpp"

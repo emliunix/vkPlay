@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <climits>
+#include <cstring>
 #include <VEZ.h>
 
 #include "utils.hpp"

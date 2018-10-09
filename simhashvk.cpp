@@ -68,7 +68,7 @@ void SimhashVK::upload(uint32_t sz, uint64_t *data)
     // write to staging
     void *ptr;
 	checkResult(vkMapMemory(mDevice, mStagingMem, 0, VK_WHOLE_SIZE, 0, &ptr));
-    memcpy(ptr, (void *)data, sz * 8);
+    std::memcpy(ptr, (void *)data, sz * 8);
 	vkUnmapMemory(mDevice, mStagingMem);
     // upload
     VezCommandBufferAllocateInfo cmdAI = {};
@@ -120,7 +120,7 @@ void SimhashVK::download(uint32_t sz, uint64_t *data)
     // copy back
 	void *ptr;
     checkResult(vkMapMemory(mDevice, mStagingMem, 0, VK_WHOLE_SIZE, 0, &ptr));
-    memcpy((void *)data, ptr, sz * 8);
+    std::memcpy((void *)data, ptr, sz * 8);
 	vkUnmapMemory(mDevice, mStagingMem);
 }
 

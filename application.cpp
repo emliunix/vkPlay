@@ -64,7 +64,7 @@ bool Application::initVulkanEZ()
 		if (properties.deviceType & VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
         {
             mPhyDevice = pd;
-			strncpy_s(useDevice, properties.deviceName, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
+			std::memcpy(useDevice, properties.deviceName, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE);
         }
 		// physical device limit
 		uint32_t *wgCount = properties.limits.maxComputeWorkGroupCount;
@@ -232,13 +232,13 @@ int Application::main(int argc, char** argv)
 	std::cout << "Processed Data:" << std::endl;
 	print_data_count(dataSize, data);
 	// compute with CPU
-	initDataWithIndex(dataSize, data);
-	for (uint32_t i = 0; i < dataSize; ++i)
-	{
-		data[i] = __popcnt64(~(data[i] ^ theHash));
-	}
-	std::cout << "Expected Data:" << std::endl;
-	print_data_count(dataSize, data);
+    //initDataWithIndex(dataSize, data);
+	//for (uint32_t i = 0; i < dataSize; ++i)
+	//{
+	//	data[i] = __popcnt64(~(data[i] ^ theHash));
+	//}
+	//std::cout << "Expected Data:" << std::endl;
+	//print_data_count(dataSize, data);
 
 	free((void *)data);
     vezDestroyDevice(mDevice);
