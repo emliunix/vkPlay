@@ -22,9 +22,10 @@ void main() {
   }
   // assume little-endian
   // store the count at the lower word
-  uint bc = bitCount(~(Data.data[index * 2] ^ simhashl)) +
-            bitCount(~(Data.data[index * 2 + 1] ^ simhashh));
+  uint bc = bitCount(Data.data[index * 2] ^ simhashl) +
+            bitCount(Data.data[index * 2 + 1] ^ simhashh);
   Data.data[index * 2] = bc;
+  Data.data[index * 2 + 1] = 0;
   // Data.data[gl_WorkGroupID.x * 2] = gl_WorkGroupID.x + 1;
   // Data.data[0] = 100;
 }

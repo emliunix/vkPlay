@@ -218,10 +218,18 @@ int Application::main(int argc, char** argv)
     }
 
 	uint32_t dataSize = 20;
-	uint64_t theHash = 0x0000111100001111;
+	uint64_t theHash = 0x29c3211d11255404; //0x0000111100001111;
 	uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t) * dataSize);;
 	initDataWithIndex(dataSize, data);
-	std::cout << "Simhash:" << std::endl << "      0x0000111100001111" << std::endl;
+    data[0] = 0xbde22cbd813534ef;
+    std::cout << "Low part: " << std::hex << ((uint32_t *)data)[0] << " High part: " << std::hex << ((uint32_t *)data)[1] << std::endl;
+    // print simHash
+	std::cout << "Simhash:" << std::endl << "      0x";
+    std::cout.width(16);
+    char prevFill = std::cout.fill('0');
+    std::cout << std::hex << theHash << std::endl;
+    std::cout.fill(prevFill);
+    // print data
 	std::cout << "Data:" << std::endl;
     print_data(dataSize, data);
 	// compute with GPU
