@@ -9,5 +9,10 @@ fi
 
 cd build
 # -march=native to enable popcnt feature
-cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_FLAGS="-march=native" -DCMAKE_CXX_FLAGS="-march=native" ..
+cmake -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_C_FLAGS="-march=native" \
+      -DCMAKE_CXX_FLAGS="-march=native" \
+      -DVEZ_COMPILE_SAMPLES:BOOL=false \
+      ..
 make

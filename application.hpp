@@ -27,13 +27,13 @@ private:
 
 #ifdef _MSC_VER
 #include <intrin.h>
-inline uint64_t popcnt64(uint64_t i)
+INLINE inline uint64_t popcnt64(uint64_t i)
 {
     return __popcnt64(i);
 }
 #else
 #include <x86intrin.h>
-inline uint64_t popcnt64(uint64_t i)
+INLINE inline uint64_t popcnt64(uint64_t i)
 {
     return _popcnt64(i);
 }

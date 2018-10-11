@@ -166,7 +166,7 @@ void uploadData()
     // Copy To GPU Mem
 }
 
-static inline void print_data(uint32_t sz, uint64_t *data) {
+inline void print_data(uint32_t sz, uint64_t *data) {
     for (uint32_t i = 0; i < sz; ++i)
     {
         std::cout.width(5);
@@ -181,7 +181,7 @@ static inline void print_data(uint32_t sz, uint64_t *data) {
     std::cout << std::endl;
 }
 
-static inline void print_data_count(uint32_t sz, uint64_t *data) {
+inline void print_data_count(uint32_t sz, uint64_t *data) {
     for (uint32_t i = 0; i < sz; ++i)
     {
         std::cout.width(5);
@@ -193,7 +193,7 @@ static inline void print_data_count(uint32_t sz, uint64_t *data) {
     std::cout << std::endl;
 }
 
-static inline void initDataWithIndex(uint32_t dataSize, uint64_t *data)
+inline void initDataWithIndex(uint32_t dataSize, uint64_t *data)
 {
     for (uint32_t i = 0; i < dataSize; ++i)
     {
@@ -203,7 +203,7 @@ static inline void initDataWithIndex(uint32_t dataSize, uint64_t *data)
     data[0] = 0xbde22cbd813534ef;
 }
 
-static inline void calcSimHashCPU(uint64_t *data, uint32_t dataSize, uint64_t theHash)
+INLINE inline void calcSimHashCPU(uint64_t *data, uint32_t dataSize, uint64_t theHash)
 {
     for (uint32_t i = 0; i < dataSize; ++i)
     {
@@ -275,7 +275,6 @@ int Application::main(int argc, char** argv)
     startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < 3000; ++i)
     {
-        std::cout << '.';
         calcSimHashCPU(data, dataSize, theHash);
     }
     std::cout << std::endl;
